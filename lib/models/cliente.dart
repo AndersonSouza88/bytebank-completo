@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
+
 import 'package:flutter/material.dart';
 
 class Cliente extends ChangeNotifier {
@@ -86,7 +90,21 @@ class Cliente extends ChangeNotifier {
     _nome = value;
     notifyListeners();
   }
+
+  File? _imagemRg = null;
+
+  File? get imagemRg => _imagemRg;
+
+  set imagemRg(File? value) {
+    _imagemRg = value;
+
+    notifyListeners();
+  }
+
+
+
   //1º
+
   int _stepAtual = 0;
 
   int get stepAtual => _stepAtual;

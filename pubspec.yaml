@@ -41,6 +41,7 @@ dependencies:
   brasil_fields:
   date_time_picker:
   flux_validator_dart:
+  image_picker:
 
 dev_dependencies:
   flutter_test:

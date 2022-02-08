@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bank_provider/models/cliente.dart';
 import 'package:bank_provider/screens/dashboard/dashboard.dart';
 import 'package:brasil_fields/brasil_fields.dart';
@@ -5,6 +7,7 @@ import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flux_validator_dart/flux_validator_dart.dart';
 
@@ -31,6 +34,7 @@ class Registrar extends StatelessWidget {
   final TextEditingController _senhaController = TextEditingController();
   final TextEditingController _confirmarSenhaController =
       TextEditingController();
+  final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -83,19 +87,19 @@ class Registrar extends StatelessWidget {
   }
 
   void _salvarStep1(context) {
-    if (_formUserData.currentState!.validate()) {
-      Cliente cliente = Provider.of<Cliente>(context, listen: false);
+    //if (_formUserData.currentState!.validate()) {
+    // Cliente cliente = Provider.of<Cliente>(context, listen: false);
 
-      cliente.nome = _nomeController.text;
+    //cliente.nome = _nomeController.text;
 
-      _proximoStep(context);
-    }
+    _proximoStep(context);
+    // }
   }
 
   void _salvarStep2(context) {
-    if (_formUserAddress.currentState!.validate()) {
-      _proximoStep(context);
-    }
+    // if (_formUserAddress.currentState!.validate()) {
+    _proximoStep(context);
+    //}
   }
 
   void _salvarStep3(context) {
@@ -164,7 +168,8 @@ class Registrar extends StatelessWidget {
                   FilteringTextInputFormatter.digitsOnly,
                   CpfInputFormatter(),
                 ],
-               validator: (value) => Validator.cpf(value) ? 'CPF inválido' : null,
+                validator: (value) =>
+                    Validator.cpf(value) ? 'CPF inválido' : null,
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -334,6 +339,25 @@ class Registrar extends StatelessWidget {
                   return null;
                 },
               ),
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                'Para prosseguir com seu castrado, é necessário que tenhamos uma foto do seu RG',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              ElevatedButton(
+                onPressed: () => _capturarRg(cliente),
+                child: Text('Tirar foto do RG'),
+              ),
+              _jaFoiEnviadoRg(context)
+                  ? _imagemDoRg(context)
+                  : _pedidoDeRg(context),
             ],
           ),
         ),
@@ -349,5 +373,32 @@ class Registrar extends StatelessWidget {
 
   irPara(int step, cliente) {
     cliente.stepAtual = step;
+  }
+
+  void _capturarRg(cliente) async {
+    final pickerImage = await _picker.getImage(source: ImageSource.camera);
+
+    cliente.imagemRg = File(pickerImage!.path);
+  }
+
+  bool _jaFoiEnviadoRg(context) {
+    if (Provider.of<Cliente>(context).imagemRg != null) return true;
+
+    return false;
+  }
+
+  Image _imagemDoRg(context) {
+    return Image.file(Provider.of<Cliente>(context).imagemRg as File);
+  }
+
+  Text _pedidoDeRg(context) {
+    return Text(
+      'Foto do RG pendente!!',
+      style: TextStyle(
+        color: Colors.red,
+        fontWeight: FontWeight.bold,
+        fontSize: 15,
+      ),
+    );
   }
 }
